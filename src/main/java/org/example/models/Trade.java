@@ -10,21 +10,27 @@ public class Trade {
     private final double profit; // Profit from the trade (0 if a buy)
     private final double balanceAfterTrade; // Account balance after this trade
     private final double positionSize; // New field for tracking trade size
+    private final double stopLossPrice;
+    private final double takeProfitPrice;
 
 
-    public Trade(String type, String date, double price, double profit, double balanceAfterTrade, double positionSize) {
+    public Trade(String type, String date, double price, double profit,
+                 double balanceAfterTrade, double positionSize, double stopLossPrice, double takeProfitPrice) {
         this.type = type;
         this.date = date;
         this.price = price;
         this.profit = profit;
         this.balanceAfterTrade = balanceAfterTrade;
         this.positionSize = positionSize;
+        this.stopLossPrice = stopLossPrice;
+        this.takeProfitPrice = takeProfitPrice;
     }
 
     @Override
     public String toString() {
-        return type + " at " + price + " on " + date +
-                (type.equals("SELL") ? " (Profit: " + profit + ")" : "") +
-                "| Balance after trade: " + balanceAfterTrade;
+        return String.format(
+                "%-12s | %-10s | Price: %-8.2f | Qty: %-6.3f | SL: %-8.2f | TP: %-8.2f | Profit: %-7.2f | Balance: %-8.2f",
+                type, date, price, positionSize, stopLossPrice, takeProfitPrice, profit, balanceAfterTrade
+        );
     }
 }

@@ -23,9 +23,12 @@ public class BacktestRunner {
         // Initialize starting account balance and risk per trade
         double initialBalance = 500.0;
         double riskPerTrade = 0.05; // Risk 5% of balance per trade
+        double stopLossPercent = 0.1;
+        double takeProfitPercent = 0.05;
 
         // Initialize a simple trading strategy
-        Strategy strategy = new Strategy(150.0, 170.0, initialBalance, riskPerTrade);
+        Strategy strategy = new Strategy(150.0, 170.0,
+                initialBalance, riskPerTrade, stopLossPercent, takeProfitPercent);
 
         // Run the strategy on the market data
         strategy.run(marketData);
