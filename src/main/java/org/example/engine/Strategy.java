@@ -14,12 +14,14 @@ import java.util.List;
 public class Strategy {
     private final double buyThreshold;  // The price at which we buy
     private final double sellThreshold; // The price at which we sell
+    private final double riskPerTrade; // % of balance to allocate per trade
     private boolean hasPosition = false; // Tracks if we currently own the asset
     private double buyPrice = 0; // The price at which we last bought
+    private double positionSize = 0; // Number of units purchased
     private final List<Trade> tradeHistory = new ArrayList<>(); // List to keep track of all trades made by strategy
 
     private double balance; // Account balance
-    private double initialBalance; // Initial capital
+    private final double initialBalance; // Initial capital
     private double totalProfit = 0; // Running total of profits/loss
 
     /**
@@ -28,12 +30,14 @@ public class Strategy {
      * @param buyThreshold The price at which to buy.
      * @param sellThreshold The price at which to sell.
      * @param initialBalance The starting account balance.
+     * @param riskPerTrade The percentage of balance allocated per trade (e.g., 5%)
      */
-    public Strategy(double buyThreshold, double sellThreshold, double initialBalance) {
+    public Strategy(double buyThreshold, double sellThreshold, double initialBalance, double riskPerTrade) {
         this.buyThreshold = buyThreshold;
         this.sellThreshold = sellThreshold;
         this.initialBalance = initialBalance;
         this.balance = initialBalance;  // Set the initial balance
+        this.riskPerTrade = riskPerTrade;
     }
 
     /**
@@ -46,25 +50,39 @@ public class Strategy {
             double price = marketDataPoint.getClosePrice();
             String date = marketDataPoint.getDate();
 
-            if (!hasPosition && price <= buyThreshold && balance >= price) {
-                // Buy the asset when price drops below the buy threshold
-                buyPrice = price;
-                hasPosition = true;
-                balance -= buyPrice; // Deduct price from balance
-                tradeHistory.add(new Trade("BUY", date, price, 0, balance)); // Profit is 0 for buys
-                System.out.println("Buy at " + price + " on " + date + " | Balance: " + balance);
+            if (!hasPosition && price <= buyThreshold) {
+
+                // Calculate the  amount to invest (risk % of balance)
+                double capitalToInvest = balance * riskPerTrade;
+                positionSize = capitalToInvest / price; // Number of units to buy
+
+                if (positionSize > 0) {
+                    buyPrice = price;
+                    hasPosition = true;
+                    balance -= capitalToInvest; // Deduct investment from balance
+
+                    tradeHistory.add(new Trade("BUY", date, price, 0, balance, positionSize)); // Profit is 0 for buys
+                    System.out.printf("BUY %.2f units at %.2f on %s | New Balance: %.2f%n",
+                            positionSize, price, date, balance);
+                } else {
+                    System.out.printf("INSUFFICIENT FUNDS: Cannot buy at %.2f on %s | Balance: %.2f%n",
+                            price, date, balance);
+                }
 
             } else if (hasPosition && price >= sellThreshold) {
-                // Sell the asset when price rise above sell threshold
-                double profit = price - buyPrice; // Calculate profit
+                // Sell the asset and calculate the profit
+                double sellValue = positionSize * price;
+                double profit = sellValue - (positionSize * buyPrice); // Calculate profit
                 totalProfit += profit; // Update running total for profit
-                balance += price; // Add sale price to the balance
+                balance += sellValue; // Add sell value to the balance
 
-                tradeHistory.add(new Trade("SELL", date, price, profit, balance));
-                System.out.println("Sell at " + price + " on " + date + " | Balance: " + balance);
+                tradeHistory.add(new Trade("SELL", date, price, profit, balance, positionSize));
+                System.out.printf("SELL %.2f units at %.2f on %s | Profit: %.2f | New Balance: %.2f%n",
+                        positionSize, price, date, profit, balance);
 
                 hasPosition = false; // Reset position
                 buyPrice = 0;
+                positionSize = 0;
             }
         }
         // Print final summary
@@ -78,7 +96,14 @@ public class Strategy {
         for (Trade trade : tradeHistory) {
             System.out.println(trade);
         }
-        System.out.println("\n----- Total Profit: " + totalProfit);
-        System.out.println("\n----- Final Balance: " + balance);
+        System.out.printf("Total Profit: %.2f | Final Balance: %.2f%n", totalProfit, balance);
+
+    }
+
+    /**
+     * Returns the trade history for export.
+     */
+    public List<Trade> getTradeHistory() {
+        return tradeHistory;
     }
 }

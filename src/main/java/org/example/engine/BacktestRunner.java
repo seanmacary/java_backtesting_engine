@@ -20,11 +20,12 @@ public class BacktestRunner {
         // Print total number of loaded points
         System.out.println("Loaded " + marketData.size() + " market data points.");
 
-        // Initialize starting account balance
+        // Initialize starting account balance and risk per trade
         double initialBalance = 500.0;
+        double riskPerTrade = 0.05; // Risk 5% of balance per trade
 
         // Initialize a simple trading strategy
-        Strategy strategy = new Strategy(150.0, 170.0, initialBalance);
+        Strategy strategy = new Strategy(150.0, 170.0, initialBalance, riskPerTrade);
 
         // Run the strategy on the market data
         strategy.run(marketData);
