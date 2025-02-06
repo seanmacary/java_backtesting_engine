@@ -26,6 +26,16 @@ public class Trade {
         this.takeProfitPrice = takeProfitPrice;
     }
 
+    // Getter methods for CSV export
+    public String getType() { return type; }
+    public String getDate() { return date; }
+    public double getPrice() { return price; }
+    public double getProfit() { return profit; }
+    public double getBalanceAfterTrade() { return balanceAfterTrade; }
+    public double getPositionSize() { return positionSize; }
+    public double getStopLossPrice() { return stopLossPrice; }
+    public double getTakeProfitPrice() { return takeProfitPrice; }
+
     @Override
     public String toString() {
         return String.format(
