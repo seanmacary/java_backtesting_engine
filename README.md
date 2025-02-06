@@ -1,46 +1,35 @@
 # Java Backtesting Engine
 
 ## Overview
-This project is a **simple backtesting engine** for evaluating trading strategies on historical market data. The engine is written in Java and follows a structured approach using:
-- **Maven** for dependency management
-- **CSV data files** for historical market data
-- **A simple strategy** based on threshold-based buy/sell logic
-- **Profit/loss tracking** and account balance management
+This project is a **Java-based backtesting engine** designed to test trading strategies on historical market data. The engine executes trades, tracks performance metrics, and provides insights into strategy effectiveness.
 
-## Current Features
-### **1. CSV Data Loading**
-- Reads market data from a CSV file (`data/sample_market_data.csv`)
-- Supports basic **date and close price** columns
+## Features
+### **1. Market Data Handling**
+- Reads market data from a CSV file (`data/sample_market_data.csv`).
+- Supports **date and closing price** columns.
 
-### **2. Basic Trading Strategy**
-- **Buy when price is below a threshold**
-- **Sell when price is above a threshold**
-- Trades are logged with timestamps
+### **2. Moving Average Crossover Strategy**
+- Implements a **short-term vs. long-term moving average crossover** strategy.
+- **Buy signal**: When the short-term moving average crosses **above** the long-term moving average.
+- **Sell signal**: When the short-term moving average crosses **below** the long-term moving average.
+- Uses **configurable short-term and long-term SMA periods**.
 
-### **3. Profit/Loss Tracking**
-- Records trades and **calculates profit/loss** after each trade
-- Keeps a running **total profit**
-- Displays a **trade history summary**
+### **3. Trade Execution & Risk Management**
+- Uses **position sizing** (trades a percentage of available balance per trade).
+- Implements **stop-loss and take-profit levels** for risk management.
+- Supports **automatic closing of open positions** at the end of backtest.
 
-### **4. Account Balance Management**
-- Includes an **initial balance**
-- Deducts **purchase price** when buying
-- Adds **sale price** when selling
-- Prevents buying if **insufficient funds**
+### **4. Performance Metrics Tracking**
+- **Total Return (%)**: Measures overall portfolio performance.
+- **Win Rate (%)**: Tracks the percentage of profitable trades.
+- **Maximum Drawdown (%)**: Measures the largest portfolio decline.
+- **Sharpe Ratio**: Evaluates risk-adjusted returns.
+- **Profit Factor**: Ratio of total gains to total losses.
 
-## Next Steps
-### **1. Position Sizing**
-- Instead of going "all in" on trades, allow fractional purchases based on available balance.
+### **5. Trade History Logging**
+- Saves executed trades to `data/trade_results.csv`.
+- Records **date, price, quantity, stop-loss, take-profit, profit, and balance**.
 
-### **2. Risk Management**
-- Implement **stop-loss and take-profit orders** to limit potential losses.
-
-### **3. Advanced Strategies**
-- Add support for **moving average crossover strategies**.
-- Implement **momentum-based trading**.
-
-### **4. Performance Metrics**
-- Calculate **Sharpe ratio**, **drawdowns**, and other key backtesting performance metrics.
-
-### **5. Data Storage & Analysis**
-- Save **trade history** and account balance changes to a CSV file for future analysis.
+### **6. Automated Performance Reporting**
+- Prints a detailed summary of **strategy performance** at the end of the backtest.
+- Tracks cumulative profit/loss and risk-adjusted metrics.
